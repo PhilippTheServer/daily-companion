@@ -1,0 +1,5 @@
+# Sourced (not executed) by the nginx entrypoint, so the export reaches envsubst in 20-*; sourced because it is a *.envsh file.
+: "${KEYCLOAK_URL:?KEYCLOAK_URL must be set}"
+KEYCLOAK_ORIGIN="$(printf '%s' "$KEYCLOAK_URL" | sed -nE 's#^([A-Za-z][A-Za-z0-9+.-]*://[^/?\#]+).*#\1#p')"
+: "${KEYCLOAK_ORIGIN:?KEYCLOAK_URL must look like scheme://host[:port]}"
+export KEYCLOAK_ORIGIN

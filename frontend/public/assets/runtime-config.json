@@ -1,0 +1,6 @@
+{
+  "apiBase": "/api/v2",
+  "keycloakUrl": "http://localhost:18180",
+  "realm": "daily2",
+  "clientId": "daily2-app"
+}

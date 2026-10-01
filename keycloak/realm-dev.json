@@ -1,0 +1,60 @@
+{
+  "realm": "daily2",
+  "displayName": "daily2 (DEV ONLY - throwaway local realm)",
+  "enabled": true,
+  "sslRequired": "none",
+  "users": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "username": "dev",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Dev",
+      "lastName": "Owner",
+      "email": "dev@example.invalid",
+      "credentials": [{ "type": "password", "value": "dev", "temporary": false }]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "daily2-app",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:4200/*", "http://localhost:18101/*"],
+      "webOrigins": ["+"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+"
+      }
+    },
+    {
+      "clientId": "daily2-mcp",
+      "publicClient": false,
+      "secret": "dev-mcp-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["https://claude.ai/*"],
+      "protocolMappers": [
+        {
+          "name": "mcp-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "http://localhost:18100/mcp",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "daily2-gymbro-sync",
+      "publicClient": false,
+      "secret": "dev-sync-secret",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
+    }
+  ]
+}

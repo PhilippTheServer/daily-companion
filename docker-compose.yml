@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: daily2
+      POSTGRES_PASSWORD: daily2 # dev-only
+      POSTGRES_DB: daily2
+    ports: ["55433:5432"]
+    volumes: [daily2_db:/var/lib/postgresql]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daily2"]
+      interval: 5s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.6
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin # dev-only
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin # dev-only
+      KC_HOSTNAME: http://localhost:18180
+      KC_HEALTH_ENABLED: "true"
+    volumes: [./keycloak:/opt/keycloak/data/import:ro]
+    ports: ["18180:8080"]
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q UP <&3"]
+      interval: 5s
+      retries: 40
+      start_period: 60s
+
+  backend:
+    build: ./backend
+    depends_on:
+      db: { condition: service_healthy }
+      keycloak: { condition: service_healthy }
+    environment:
+      DATABASE_URL: postgresql+psycopg://daily2:daily2@db/daily2
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_PUBLIC_URL: http://localhost:18180
+      KEYCLOAK_REALM: daily2
+      OWNER_SUB: 11111111-1111-1111-1111-111111111111
+      MCP_RESOURCE_URL: http://localhost:18100/mcp
+      MCP_ALLOWED_HOSTS: '["localhost:18100"]'
+      LOG_JSON: "false"
+    ports: ["18100:8000"]
+
+  frontend:
+    build: ./frontend
+    profiles: [ui]
+    depends_on:
+      backend: { condition: service_healthy }
+    environment:
+      BACKEND_URL: http://backend:8000
+      # Host case differs from the image default on purpose: same origin for browsers, but ui_smoke
+      # can prove the runtime config comes from this environment.
+      KEYCLOAK_URL: http://LOCALHOST:18180
+      KEYCLOAK_REALM: daily2
+      KEYCLOAK_CLIENT_ID: daily2-app
+    ports: ["18101:80"]
+
+volumes:
+  daily2_db:

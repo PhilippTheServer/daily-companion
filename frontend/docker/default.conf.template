@@ -1,0 +1,80 @@
+map $http_x_forwarded_proto $fwd_proto {
+    default $scheme;
+    https   https;
+}
+
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+
+    resolver 127.0.0.11 valid=10s ipv6=off;
+    set $backend ${BACKEND_URL};
+
+    client_max_body_size 2m;
+
+    gzip on;
+    gzip_types text/css application/javascript text/javascript application/json image/svg+xml;
+
+    add_header Content-Security-Policy "default-src 'self'; connect-src 'self' ${KEYCLOAK_ORIGIN}; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy no-referrer always;
+
+    location ^~ /api/ {
+        proxy_pass $backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $fwd_proto;
+        proxy_read_timeout 120s;
+        proxy_send_timeout 120s;
+    }
+
+    location = /health {
+        proxy_pass $backend;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Proto $fwd_proto;
+    }
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    location = /assets/runtime-config.json {
+        expires -1;
+    }
+
+    location /assets/ {
+        try_files $uri =404;
+    }
+
+    location = /index.html {
+        expires -1;
+    }
+
+    location = /ngsw.json {
+        expires -1;
+    }
+
+    location = /ngsw-worker.js {
+        expires -1;
+    }
+
+    location = /safety-worker.js {
+        expires -1;
+    }
+
+    location = /worker-basic.min.js {
+        expires -1;
+    }
+
+    location ~* \.(?:js|css)$ {
+        expires max;
+    }
+
+    location / {
+        expires -1;
+        try_files $uri $uri/ /index.html;
+    }
+}
