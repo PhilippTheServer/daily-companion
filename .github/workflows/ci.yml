@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: daily2
+          POSTGRES_PASSWORD: daily2
+          POSTGRES_DB: daily2_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U daily2" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      UV_LOCKED: "1"
+      TEST_DATABASE_URL: postgresql+psycopg://daily2:daily2@localhost:5432/daily2_test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: "3.14"
+      - run: uv sync --locked
+      - run: uv run ruff check
+      - run: uv run ruff format --check
+      - run: uv run ruff check ../e2e && uv run ruff format --check ../e2e
+      - run: uv run pytest -q
+      - name: Migrations round trip
+        env:
+          PGPASSWORD: daily2
+          DATABASE_URL: postgresql+psycopg://daily2:daily2@localhost:5432/daily2_migrations
+        run: |
+          psql -h localhost -U daily2 -d daily2_test -c "CREATE DATABASE daily2_migrations"
+          uv run alembic upgrade head
+          uv run alembic check
+          uv run alembic downgrade base
+          uv run alembic upgrade head
+          uv run alembic check
+
+  frontend:
+    runs-on: ubuntu-latest
+    env:
+      UV_LOCKED: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: "3.14"
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: The API snapshot matches the backend
+        run: |
+          uv sync --project backend --locked
+          frontend/scripts/snapshot-api.sh
+          changed="$(git status --porcelain -- frontend/openapi.json frontend/src/testing/schemas.json frontend/src/app/core/api)"
+          if [ -n "$changed" ]; then
+            echo "The API snapshot is stale; run npm run api in frontend/:"
+            echo "$changed"
+            git diff -- frontend
+            exit 1
+          fi
+      - name: Prettier and unit tests (the image's test stage)
+        run: docker build --target test frontend
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    env:
+      UV_LOCKED: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: "3.14"
+      - run: docker compose --profile ui up -d --build --wait
+      - run: uv run --project backend python e2e/scenario.py
+      - run: uv run --project backend python e2e/ui_smoke.py
+      - if: failure()
+        run: docker compose --profile ui logs

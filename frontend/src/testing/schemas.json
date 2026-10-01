@@ -1,0 +1,3270 @@
+{
+  "commands": {
+    "update_profile": {
+      "additionalProperties": false,
+      "description": "Only the fields sent change; null clears an optional field.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "timezone": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "IANA name, e.g. Europe/Berlin.",
+          "title": "Timezone"
+        },
+        "height_cm": {
+          "anyOf": [
+            {
+              "exclusiveMaximum": 260,
+              "exclusiveMinimum": 50,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Height Cm"
+        },
+        "birth_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Birth Date"
+        },
+        "sex": {
+          "anyOf": [
+            {
+              "enum": [
+                "male",
+                "female"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sex"
+        },
+        "goal_weight_kg": {
+          "anyOf": [
+            {
+              "exclusiveMaximum": 400,
+              "exclusiveMinimum": 20,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Goal Weight Kg"
+        },
+        "goal_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Goal Date"
+        },
+        "protein_g_per_kg": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 4,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Protein G Per Kg"
+        },
+        "fat_g_per_kg_min": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 3,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fat G Per Kg Min"
+        },
+        "gym_sessions_per_week": {
+          "anyOf": [
+            {
+              "maximum": 14,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gym Sessions Per Week"
+        }
+      },
+      "title": "ProfileUpdate",
+      "type": "object"
+    },
+    "set_source_preference": {
+      "additionalProperties": false,
+      "description": "Set the source order for one metric, e.g. steps: [ring, health-connect, app].",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "metric": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Metric",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10,
+          "minItems": 1,
+          "title": "Sources",
+          "type": "array"
+        }
+      },
+      "required": [
+        "metric",
+        "sources"
+      ],
+      "title": "SourcePreferenceIn",
+      "type": "object"
+    },
+    "import_food": {
+      "additionalProperties": false,
+      "description": "Add a product from Open Food Facts by barcode (or return it if already known).",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "barcode": {
+          "pattern": "^[0-9]{4,32}$",
+          "title": "Barcode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "barcode"
+      ],
+      "title": "FoodImport",
+      "type": "object"
+    },
+    "save_food": {
+      "$defs": {
+        "Per100": {
+          "additionalProperties": false,
+          "description": "Nutrient facts per 100 g (or 100 ml for drinks).",
+          "properties": {
+            "kcal": {
+              "maximum": 1000,
+              "minimum": 0,
+              "title": "Kcal",
+              "type": "number"
+            },
+            "protein_g": {
+              "anyOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Protein G"
+            },
+            "carbs_g": {
+              "anyOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Carbs G"
+            },
+            "fat_g": {
+              "anyOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Fat G"
+            },
+            "fiber_g": {
+              "anyOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Fiber G"
+            },
+            "sugar_g": {
+              "anyOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Sugar G"
+            },
+            "salt_g": {
+              "anyOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Salt G"
+            }
+          },
+          "required": [
+            "kcal"
+          ],
+          "title": "Per100",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Create a food (without id) or change one (with id); a change touches only the fields sent.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "brand": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Brand"
+        },
+        "kind": {
+          "anyOf": [
+            {
+              "enum": [
+                "food",
+                "drink"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kind"
+        },
+        "unit_name": {
+          "anyOf": [
+            {
+              "maxLength": 32,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. St\u00fcck",
+          "title": "Unit Name"
+        },
+        "unit_grams": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 5000,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit Grams"
+        },
+        "pack_grams": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 100000,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pack Grams"
+        },
+        "per_100": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Per100"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "New nutrients create a new version."
+        }
+      },
+      "title": "FoodSave",
+      "type": "object"
+    },
+    "archive_food": {
+      "additionalProperties": false,
+      "description": "A command on one entity.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ByIdCommand",
+      "type": "object"
+    },
+    "save_recipe": {
+      "$defs": {
+        "RecipeItemIn": {
+          "additionalProperties": false,
+          "description": "One ingredient.",
+          "properties": {
+            "food_id": {
+              "format": "uuid",
+              "title": "Food Id",
+              "type": "string"
+            },
+            "grams": {
+              "exclusiveMinimum": 0,
+              "maximum": 5000,
+              "title": "Grams",
+              "type": "number"
+            }
+          },
+          "required": [
+            "food_id",
+            "grams"
+          ],
+          "title": "RecipeItemIn",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Create a recipe (without id) or add a new version of one (with id).",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "serves": {
+          "default": 1,
+          "description": "Portions the items make.",
+          "maximum": 50,
+          "minimum": 1,
+          "title": "Serves",
+          "type": "integer"
+        },
+        "steps": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Steps",
+          "type": "array"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/RecipeItemIn"
+          },
+          "maxItems": 60,
+          "minItems": 1,
+          "title": "Items",
+          "type": "array"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "name",
+        "items"
+      ],
+      "title": "RecipeSave",
+      "type": "object"
+    },
+    "archive_recipe": {
+      "additionalProperties": false,
+      "description": "A command on one entity.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ByIdCommand",
+      "type": "object"
+    },
+    "log_events": {
+      "$defs": {
+        "ActivityDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "activity",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/ActivityP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "ActivityDraft",
+          "type": "object"
+        },
+        "ActivityP": {
+          "additionalProperties": false,
+          "description": "A day's movement totals; occurred_at/ends_at span the local day.",
+          "properties": {
+            "steps": {
+              "anyOf": [
+                {
+                  "maximum": 200000,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Steps"
+            },
+            "active_minutes": {
+              "anyOf": [
+                {
+                  "maximum": 1440,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Active Minutes"
+            },
+            "distance_km": {
+              "anyOf": [
+                {
+                  "maximum": 500,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Distance Km"
+            }
+          },
+          "title": "ActivityP",
+          "type": "object"
+        },
+        "CheckinDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "checkin",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/CheckinP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "CheckinDraft",
+          "type": "object"
+        },
+        "CheckinP": {
+          "additionalProperties": false,
+          "description": "How the day feels, 1 (bad) to 5 (good).",
+          "properties": {
+            "overall": {
+              "maximum": 5,
+              "minimum": 1,
+              "title": "Overall",
+              "type": "integer"
+            },
+            "energy": {
+              "anyOf": [
+                {
+                  "maximum": 5,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Energy"
+            },
+            "mood": {
+              "anyOf": [
+                {
+                  "maximum": 5,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Mood"
+            },
+            "stress": {
+              "anyOf": [
+                {
+                  "maximum": 5,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Stress"
+            },
+            "note": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Note"
+            }
+          },
+          "required": [
+            "overall"
+          ],
+          "title": "CheckinP",
+          "type": "object"
+        },
+        "DoseP": {
+          "additionalProperties": false,
+          "description": "A dose of a medication or supplement.",
+          "properties": {
+            "name": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "dose": {
+              "exclusiveMinimum": 0,
+              "maximum": 100000,
+              "title": "Dose",
+              "type": "number"
+            },
+            "unit": {
+              "maxLength": 20,
+              "minLength": 1,
+              "title": "Unit",
+              "type": "string"
+            },
+            "reason": {
+              "anyOf": [
+                {
+                  "maxLength": 500,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Reason"
+            },
+            "note": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Note"
+            }
+          },
+          "required": [
+            "name",
+            "dose",
+            "unit"
+          ],
+          "title": "DoseP",
+          "type": "object"
+        },
+        "IntakeDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "intake",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/IntakeIn"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "IntakeDraft",
+          "type": "object"
+        },
+        "IntakeIn": {
+          "additionalProperties": false,
+          "description": "What was eaten or drunk: either items, or a recipe with portions.",
+          "properties": {
+            "slot": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "breakfast",
+                    "lunch",
+                    "dinner",
+                    "snack"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Slot"
+            },
+            "items": {
+              "items": {
+                "$ref": "#/$defs/IntakeItemIn"
+              },
+              "maxItems": 60,
+              "title": "Items",
+              "type": "array"
+            },
+            "recipe_id": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Recipe Id"
+            },
+            "portions": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "maximum": 20,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Portions of the recipe; default 1.",
+              "title": "Portions"
+            },
+            "note": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Note"
+            }
+          },
+          "title": "IntakeIn",
+          "type": "object"
+        },
+        "IntakeItemIn": {
+          "additionalProperties": false,
+          "description": "An eaten amount of a catalog food.",
+          "properties": {
+            "food_id": {
+              "format": "uuid",
+              "title": "Food Id",
+              "type": "string"
+            },
+            "grams": {
+              "description": "Grams, or ml for drinks.",
+              "exclusiveMinimum": 0,
+              "maximum": 5000,
+              "title": "Grams",
+              "type": "number"
+            }
+          },
+          "required": [
+            "food_id",
+            "grams"
+          ],
+          "title": "IntakeItemIn",
+          "type": "object"
+        },
+        "LinkIn": {
+          "additionalProperties": false,
+          "description": "Link the new event to an existing chain, e.g. a symptom to a suspected meal.",
+          "properties": {
+            "to_chain": {
+              "format": "uuid",
+              "title": "To Chain",
+              "type": "string"
+            },
+            "relation": {
+              "enum": [
+                "suspected_cause",
+                "part_of",
+                "follows"
+              ],
+              "title": "Relation",
+              "type": "string"
+            }
+          },
+          "required": [
+            "to_chain",
+            "relation"
+          ],
+          "title": "LinkIn",
+          "type": "object"
+        },
+        "MeasurementDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "measurement",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/MeasurementP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "MeasurementDraft",
+          "type": "object"
+        },
+        "MeasurementP": {
+          "additionalProperties": false,
+          "description": "One body value; the unit is fixed per metric.",
+          "properties": {
+            "metric": {
+              "enum": [
+                "weight_kg",
+                "waist_cm",
+                "body_fat_pct",
+                "resting_hr_bpm",
+                "hrv_ms",
+                "spo2_pct",
+                "skin_temp_delta_c",
+                "blood_pressure_sys",
+                "blood_pressure_dia"
+              ],
+              "title": "Metric",
+              "type": "string"
+            },
+            "value": {
+              "maximum": 100000,
+              "minimum": -1000,
+              "title": "Value",
+              "type": "number"
+            },
+            "unit": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Unit"
+            }
+          },
+          "required": [
+            "metric",
+            "value"
+          ],
+          "title": "MeasurementP",
+          "type": "object"
+        },
+        "MedicationDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "medication",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/DoseP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "MedicationDraft",
+          "type": "object"
+        },
+        "NoteDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "note",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/NoteP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "NoteDraft",
+          "type": "object"
+        },
+        "NoteP": {
+          "additionalProperties": false,
+          "description": "Free text.",
+          "properties": {
+            "text": {
+              "maxLength": 5000,
+              "minLength": 1,
+              "title": "Text",
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "title": "NoteP",
+          "type": "object"
+        },
+        "OuttakeDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "outtake",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/OuttakeP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "OuttakeDraft",
+          "type": "object"
+        },
+        "OuttakeP": {
+          "additionalProperties": false,
+          "description": "A bowel movement.",
+          "properties": {
+            "bristol": {
+              "description": "Bristol stool scale 1-7.",
+              "maximum": 7,
+              "minimum": 1,
+              "title": "Bristol",
+              "type": "integer"
+            },
+            "urgency": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Urgency"
+            },
+            "pain": {
+              "anyOf": [
+                {
+                  "maximum": 5,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Pain"
+            },
+            "flags": {
+              "items": {
+                "enum": [
+                  "blood",
+                  "mucus",
+                  "undigested"
+                ],
+                "type": "string"
+              },
+              "maxItems": 3,
+              "title": "Flags",
+              "type": "array"
+            },
+            "note": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Note"
+            }
+          },
+          "required": [
+            "bristol"
+          ],
+          "title": "OuttakeP",
+          "type": "object"
+        },
+        "SleepDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "sleep",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/SleepP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "SleepDraft",
+          "type": "object"
+        },
+        "SleepP": {
+          "additionalProperties": false,
+          "description": "A sleep period; occurred_at is falling asleep, ends_at waking up.",
+          "properties": {
+            "quality": {
+              "anyOf": [
+                {
+                  "maximum": 5,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Quality"
+            },
+            "stages": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SleepStages"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "efficiency_pct": {
+              "anyOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Efficiency Pct"
+            },
+            "note": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Note"
+            }
+          },
+          "title": "SleepP",
+          "type": "object"
+        },
+        "SleepStages": {
+          "additionalProperties": false,
+          "description": "Minutes per sleep stage.",
+          "properties": {
+            "deep_min": {
+              "maximum": 1440,
+              "minimum": 0,
+              "title": "Deep Min",
+              "type": "integer"
+            },
+            "light_min": {
+              "maximum": 1440,
+              "minimum": 0,
+              "title": "Light Min",
+              "type": "integer"
+            },
+            "rem_min": {
+              "maximum": 1440,
+              "minimum": 0,
+              "title": "Rem Min",
+              "type": "integer"
+            },
+            "awake_min": {
+              "maximum": 1440,
+              "minimum": 0,
+              "title": "Awake Min",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "deep_min",
+            "light_min",
+            "rem_min",
+            "awake_min"
+          ],
+          "title": "SleepStages",
+          "type": "object"
+        },
+        "SupplementDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "supplement",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/DoseP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "SupplementDraft",
+          "type": "object"
+        },
+        "SymptomDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "symptom",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/SymptomP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "SymptomDraft",
+          "type": "object"
+        },
+        "SymptomP": {
+          "additionalProperties": false,
+          "description": "Something felt; link it to suspected causes with links.",
+          "properties": {
+            "type": {
+              "enum": [
+                "stomach_ache",
+                "gas",
+                "bloated",
+                "nausea",
+                "diarrhea",
+                "constipation",
+                "heartburn",
+                "headache",
+                "fatigue",
+                "skin",
+                "other"
+              ],
+              "title": "Type",
+              "type": "string"
+            },
+            "severity": {
+              "maximum": 5,
+              "minimum": 1,
+              "title": "Severity",
+              "type": "integer"
+            },
+            "body_area": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Body Area"
+            },
+            "note": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Note"
+            }
+          },
+          "required": [
+            "type",
+            "severity"
+          ],
+          "title": "SymptomP",
+          "type": "object"
+        },
+        "WorkoutDraft": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "workout",
+              "title": "Kind",
+              "type": "string"
+            },
+            "occurred_at": {
+              "format": "date-time",
+              "title": "Occurred At",
+              "type": "string"
+            },
+            "ends_at": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ends At"
+            },
+            "payload": {
+              "$ref": "#/$defs/WorkoutP"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/LinkIn"
+              },
+              "maxItems": 10,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "occurred_at",
+            "payload"
+          ],
+          "title": "WorkoutDraft",
+          "type": "object"
+        },
+        "WorkoutExercise": {
+          "additionalProperties": false,
+          "description": "One exercise with its completed sets.",
+          "properties": {
+            "name": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "category": {
+              "maxLength": 50,
+              "minLength": 1,
+              "title": "Category",
+              "type": "string"
+            },
+            "sets": {
+              "items": {
+                "$ref": "#/$defs/WorkoutSet"
+              },
+              "maxItems": 100,
+              "title": "Sets",
+              "type": "array"
+            }
+          },
+          "required": [
+            "name",
+            "category"
+          ],
+          "title": "WorkoutExercise",
+          "type": "object"
+        },
+        "WorkoutP": {
+          "additionalProperties": false,
+          "description": "A training session.",
+          "properties": {
+            "title": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Title",
+              "type": "string"
+            },
+            "category": {
+              "enum": [
+                "strength",
+                "cardio",
+                "mixed",
+                "other"
+              ],
+              "title": "Category",
+              "type": "string"
+            },
+            "set_count": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Set Count"
+            },
+            "volume_kg": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Volume Kg"
+            },
+            "exercises": {
+              "items": {
+                "$ref": "#/$defs/WorkoutExercise"
+              },
+              "maxItems": 50,
+              "title": "Exercises",
+              "type": "array"
+            },
+            "note": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Note"
+            }
+          },
+          "required": [
+            "title",
+            "category"
+          ],
+          "title": "WorkoutP",
+          "type": "object"
+        },
+        "WorkoutSet": {
+          "additionalProperties": false,
+          "description": "One completed set.",
+          "properties": {
+            "reps": {
+              "anyOf": [
+                {
+                  "maximum": 1000,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Reps"
+            },
+            "weight_kg": {
+              "anyOf": [
+                {
+                  "maximum": 1000,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Weight Kg"
+            },
+            "duration_s": {
+              "anyOf": [
+                {
+                  "maximum": 86400,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Duration S"
+            },
+            "rpe": {
+              "anyOf": [
+                {
+                  "maximum": 10,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Rpe"
+            }
+          },
+          "title": "WorkoutSet",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Log 1-50 facts; each needs kind, occurred_at (with offset) and payload.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "events": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "activity": "#/$defs/ActivityDraft",
+                "checkin": "#/$defs/CheckinDraft",
+                "intake": "#/$defs/IntakeDraft",
+                "measurement": "#/$defs/MeasurementDraft",
+                "medication": "#/$defs/MedicationDraft",
+                "note": "#/$defs/NoteDraft",
+                "outtake": "#/$defs/OuttakeDraft",
+                "sleep": "#/$defs/SleepDraft",
+                "supplement": "#/$defs/SupplementDraft",
+                "symptom": "#/$defs/SymptomDraft",
+                "workout": "#/$defs/WorkoutDraft"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/IntakeDraft"
+              },
+              {
+                "$ref": "#/$defs/OuttakeDraft"
+              },
+              {
+                "$ref": "#/$defs/SymptomDraft"
+              },
+              {
+                "$ref": "#/$defs/MedicationDraft"
+              },
+              {
+                "$ref": "#/$defs/SupplementDraft"
+              },
+              {
+                "$ref": "#/$defs/SleepDraft"
+              },
+              {
+                "$ref": "#/$defs/ActivityDraft"
+              },
+              {
+                "$ref": "#/$defs/WorkoutDraft"
+              },
+              {
+                "$ref": "#/$defs/MeasurementDraft"
+              },
+              {
+                "$ref": "#/$defs/CheckinDraft"
+              },
+              {
+                "$ref": "#/$defs/NoteDraft"
+              }
+            ]
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Events",
+          "type": "array"
+        }
+      },
+      "required": [
+        "events"
+      ],
+      "title": "LogEvents",
+      "type": "object"
+    },
+    "correct_event": {
+      "additionalProperties": false,
+      "description": "Replace times and/or payload of the current version; the payload is sent whole.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "id": {
+          "description": "The current version's id (the head).",
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "occurred_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occurred At"
+        },
+        "ends_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ends At"
+        },
+        "payload": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "CorrectEvent",
+      "type": "object"
+    },
+    "retract_event": {
+      "additionalProperties": false,
+      "description": "Stop a chain from counting; history keeps it.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "id": {
+          "description": "The current version's id (the head).",
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "RetractEvent",
+      "type": "object"
+    },
+    "link_events": {
+      "additionalProperties": false,
+      "description": "Relate two chains.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "from_chain": {
+          "format": "uuid",
+          "title": "From Chain",
+          "type": "string"
+        },
+        "to_chain": {
+          "format": "uuid",
+          "title": "To Chain",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "suspected_cause",
+            "part_of",
+            "follows"
+          ],
+          "title": "Relation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from_chain",
+        "to_chain",
+        "relation"
+      ],
+      "title": "LinkEvents",
+      "type": "object"
+    },
+    "unlink_events": {
+      "additionalProperties": false,
+      "description": "Relate two chains.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "from_chain": {
+          "format": "uuid",
+          "title": "From Chain",
+          "type": "string"
+        },
+        "to_chain": {
+          "format": "uuid",
+          "title": "To Chain",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "suspected_cause",
+            "part_of",
+            "follows"
+          ],
+          "title": "Relation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from_chain",
+        "to_chain",
+        "relation"
+      ],
+      "title": "LinkEvents",
+      "type": "object"
+    },
+    "sync_now": {
+      "additionalProperties": false,
+      "description": "Run one source's sync immediately.",
+      "properties": {
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idempotency Key"
+        },
+        "source": {
+          "description": "e.g. gym-bro",
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "SyncNow",
+      "type": "object"
+    }
+  },
+  "queries": {
+    "find_food": {
+      "additionalProperties": false,
+      "description": "Search the local catalog and Open Food Facts.",
+      "properties": {
+        "q": {
+          "maxLength": 100,
+          "minLength": 2,
+          "title": "Q",
+          "type": "string"
+        }
+      },
+      "required": [
+        "q"
+      ],
+      "title": "FoodSearch",
+      "type": "object"
+    },
+    "get_food": {
+      "additionalProperties": false,
+      "description": "A query for one entity.",
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ById",
+      "type": "object"
+    },
+    "get_recipe": {
+      "additionalProperties": false,
+      "description": "A query for one entity.",
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ById",
+      "type": "object"
+    },
+    "list_recipes": {
+      "additionalProperties": false,
+      "description": "List recipes.",
+      "properties": {
+        "include_archived": {
+          "default": false,
+          "title": "Include Archived",
+          "type": "boolean"
+        }
+      },
+      "title": "RecipeListQuery",
+      "type": "object"
+    },
+    "query_events": {
+      "additionalProperties": false,
+      "description": "Current versions between two local days (at most 366 days).",
+      "properties": {
+        "from_day": {
+          "format": "date",
+          "title": "From Day",
+          "type": "string"
+        },
+        "to_day": {
+          "format": "date",
+          "title": "To Day",
+          "type": "string"
+        },
+        "kinds": {
+          "anyOf": [
+            {
+              "items": {
+                "enum": [
+                  "intake",
+                  "outtake",
+                  "symptom",
+                  "medication",
+                  "supplement",
+                  "sleep",
+                  "activity",
+                  "workout",
+                  "measurement",
+                  "checkin",
+                  "note"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kinds"
+        },
+        "include_retracted": {
+          "default": false,
+          "title": "Include Retracted",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "from_day",
+        "to_day"
+      ],
+      "title": "QueryEvents",
+      "type": "object"
+    },
+    "get_event_history": {
+      "additionalProperties": false,
+      "description": "One chain.",
+      "properties": {
+        "chain_id": {
+          "format": "uuid",
+          "title": "Chain Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "chain_id"
+      ],
+      "title": "ChainQuery",
+      "type": "object"
+    },
+    "get_context": {
+      "additionalProperties": false,
+      "description": "Defaults to the owner's today.",
+      "properties": {
+        "date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Date"
+        }
+      },
+      "title": "ContextQuery",
+      "type": "object"
+    },
+    "get_day": {
+      "additionalProperties": false,
+      "description": "One local day.",
+      "properties": {
+        "date": {
+          "format": "date",
+          "title": "Date",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date"
+      ],
+      "title": "DayQuery",
+      "type": "object"
+    },
+    "get_diary": {
+      "additionalProperties": false,
+      "description": "A page of whole days.",
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cursor"
+        },
+        "days": {
+          "default": 7,
+          "maximum": 31,
+          "minimum": 1,
+          "title": "Days",
+          "type": "integer"
+        },
+        "kinds": {
+          "anyOf": [
+            {
+              "items": {
+                "enum": [
+                  "intake",
+                  "outtake",
+                  "symptom",
+                  "medication",
+                  "supplement",
+                  "sleep",
+                  "activity",
+                  "workout",
+                  "measurement",
+                  "checkin",
+                  "note"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kinds"
+        }
+      },
+      "title": "DiaryQuery",
+      "type": "object"
+    },
+    "get_profile": {
+      "additionalProperties": false,
+      "description": "A query without parameters.",
+      "properties": {},
+      "title": "EmptyQuery",
+      "type": "object"
+    },
+    "get_schemas": {
+      "additionalProperties": false,
+      "description": "A query without parameters.",
+      "properties": {},
+      "title": "EmptyQuery",
+      "type": "object"
+    }
+  },
+  "payloads": {
+    "intake": {
+      "$defs": {
+        "IntakeItemIn": {
+          "additionalProperties": false,
+          "description": "An eaten amount of a catalog food.",
+          "properties": {
+            "food_id": {
+              "format": "uuid",
+              "title": "Food Id",
+              "type": "string"
+            },
+            "grams": {
+              "description": "Grams, or ml for drinks.",
+              "exclusiveMinimum": 0,
+              "maximum": 5000,
+              "title": "Grams",
+              "type": "number"
+            }
+          },
+          "required": [
+            "food_id",
+            "grams"
+          ],
+          "title": "IntakeItemIn",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "What was eaten or drunk: either items, or a recipe with portions.",
+      "properties": {
+        "slot": {
+          "anyOf": [
+            {
+              "enum": [
+                "breakfast",
+                "lunch",
+                "dinner",
+                "snack"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Slot"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/IntakeItemIn"
+          },
+          "maxItems": 60,
+          "title": "Items",
+          "type": "array"
+        },
+        "recipe_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recipe Id"
+        },
+        "portions": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 20,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Portions of the recipe; default 1.",
+          "title": "Portions"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "title": "IntakeIn",
+      "type": "object"
+    },
+    "outtake": {
+      "additionalProperties": false,
+      "description": "A bowel movement.",
+      "properties": {
+        "bristol": {
+          "description": "Bristol stool scale 1-7.",
+          "maximum": 7,
+          "minimum": 1,
+          "title": "Bristol",
+          "type": "integer"
+        },
+        "urgency": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Urgency"
+        },
+        "pain": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pain"
+        },
+        "flags": {
+          "items": {
+            "enum": [
+              "blood",
+              "mucus",
+              "undigested"
+            ],
+            "type": "string"
+          },
+          "maxItems": 3,
+          "title": "Flags",
+          "type": "array"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "bristol"
+      ],
+      "title": "OuttakeP",
+      "type": "object"
+    },
+    "symptom": {
+      "additionalProperties": false,
+      "description": "Something felt; link it to suspected causes with links.",
+      "properties": {
+        "type": {
+          "enum": [
+            "stomach_ache",
+            "gas",
+            "bloated",
+            "nausea",
+            "diarrhea",
+            "constipation",
+            "heartburn",
+            "headache",
+            "fatigue",
+            "skin",
+            "other"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "severity": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Severity",
+          "type": "integer"
+        },
+        "body_area": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Body Area"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "type",
+        "severity"
+      ],
+      "title": "SymptomP",
+      "type": "object"
+    },
+    "medication": {
+      "additionalProperties": false,
+      "description": "A dose of a medication or supplement.",
+      "properties": {
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "dose": {
+          "exclusiveMinimum": 0,
+          "maximum": 100000,
+          "title": "Dose",
+          "type": "number"
+        },
+        "unit": {
+          "maxLength": 20,
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "name",
+        "dose",
+        "unit"
+      ],
+      "title": "DoseP",
+      "type": "object"
+    },
+    "supplement": {
+      "additionalProperties": false,
+      "description": "A dose of a medication or supplement.",
+      "properties": {
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "dose": {
+          "exclusiveMinimum": 0,
+          "maximum": 100000,
+          "title": "Dose",
+          "type": "number"
+        },
+        "unit": {
+          "maxLength": 20,
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "name",
+        "dose",
+        "unit"
+      ],
+      "title": "DoseP",
+      "type": "object"
+    },
+    "sleep": {
+      "$defs": {
+        "SleepStages": {
+          "additionalProperties": false,
+          "description": "Minutes per sleep stage.",
+          "properties": {
+            "deep_min": {
+              "maximum": 1440,
+              "minimum": 0,
+              "title": "Deep Min",
+              "type": "integer"
+            },
+            "light_min": {
+              "maximum": 1440,
+              "minimum": 0,
+              "title": "Light Min",
+              "type": "integer"
+            },
+            "rem_min": {
+              "maximum": 1440,
+              "minimum": 0,
+              "title": "Rem Min",
+              "type": "integer"
+            },
+            "awake_min": {
+              "maximum": 1440,
+              "minimum": 0,
+              "title": "Awake Min",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "deep_min",
+            "light_min",
+            "rem_min",
+            "awake_min"
+          ],
+          "title": "SleepStages",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "A sleep period; occurred_at is falling asleep, ends_at waking up.",
+      "properties": {
+        "quality": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quality"
+        },
+        "stages": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SleepStages"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "efficiency_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Efficiency Pct"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "title": "SleepP",
+      "type": "object"
+    },
+    "activity": {
+      "additionalProperties": false,
+      "description": "A day's movement totals; occurred_at/ends_at span the local day.",
+      "properties": {
+        "steps": {
+          "anyOf": [
+            {
+              "maximum": 200000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Steps"
+        },
+        "active_minutes": {
+          "anyOf": [
+            {
+              "maximum": 1440,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Active Minutes"
+        },
+        "distance_km": {
+          "anyOf": [
+            {
+              "maximum": 500,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distance Km"
+        }
+      },
+      "title": "ActivityP",
+      "type": "object"
+    },
+    "workout": {
+      "$defs": {
+        "WorkoutExercise": {
+          "additionalProperties": false,
+          "description": "One exercise with its completed sets.",
+          "properties": {
+            "name": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "category": {
+              "maxLength": 50,
+              "minLength": 1,
+              "title": "Category",
+              "type": "string"
+            },
+            "sets": {
+              "items": {
+                "$ref": "#/$defs/WorkoutSet"
+              },
+              "maxItems": 100,
+              "title": "Sets",
+              "type": "array"
+            }
+          },
+          "required": [
+            "name",
+            "category"
+          ],
+          "title": "WorkoutExercise",
+          "type": "object"
+        },
+        "WorkoutSet": {
+          "additionalProperties": false,
+          "description": "One completed set.",
+          "properties": {
+            "reps": {
+              "anyOf": [
+                {
+                  "maximum": 1000,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Reps"
+            },
+            "weight_kg": {
+              "anyOf": [
+                {
+                  "maximum": 1000,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Weight Kg"
+            },
+            "duration_s": {
+              "anyOf": [
+                {
+                  "maximum": 86400,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Duration S"
+            },
+            "rpe": {
+              "anyOf": [
+                {
+                  "maximum": 10,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Rpe"
+            }
+          },
+          "title": "WorkoutSet",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "A training session.",
+      "properties": {
+        "title": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "strength",
+            "cardio",
+            "mixed",
+            "other"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "set_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Set Count"
+        },
+        "volume_kg": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Volume Kg"
+        },
+        "exercises": {
+          "items": {
+            "$ref": "#/$defs/WorkoutExercise"
+          },
+          "maxItems": 50,
+          "title": "Exercises",
+          "type": "array"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "title",
+        "category"
+      ],
+      "title": "WorkoutP",
+      "type": "object"
+    },
+    "measurement": {
+      "additionalProperties": false,
+      "description": "One body value; the unit is fixed per metric.",
+      "properties": {
+        "metric": {
+          "enum": [
+            "weight_kg",
+            "waist_cm",
+            "body_fat_pct",
+            "resting_hr_bpm",
+            "hrv_ms",
+            "spo2_pct",
+            "skin_temp_delta_c",
+            "blood_pressure_sys",
+            "blood_pressure_dia"
+          ],
+          "title": "Metric",
+          "type": "string"
+        },
+        "value": {
+          "maximum": 100000,
+          "minimum": -1000,
+          "title": "Value",
+          "type": "number"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "metric",
+        "value"
+      ],
+      "title": "MeasurementP",
+      "type": "object"
+    },
+    "checkin": {
+      "additionalProperties": false,
+      "description": "How the day feels, 1 (bad) to 5 (good).",
+      "properties": {
+        "overall": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Overall",
+          "type": "integer"
+        },
+        "energy": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Energy"
+        },
+        "mood": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mood"
+        },
+        "stress": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stress"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "overall"
+      ],
+      "title": "CheckinP",
+      "type": "object"
+    },
+    "note": {
+      "additionalProperties": false,
+      "description": "Free text.",
+      "properties": {
+        "text": {
+          "maxLength": 5000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "NoteP",
+      "type": "object"
+    }
+  }
+}

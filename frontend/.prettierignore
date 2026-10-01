@@ -1,0 +1,3 @@
+src/app/core/api/openapi.ts
+src/testing/schemas.json
+openapi.json
